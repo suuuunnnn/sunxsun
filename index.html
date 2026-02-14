@@ -159,8 +159,8 @@
         /* Front petals (inner layer) */
         .front-petals {
             position: absolute;
-            width: 200px;
-            height: 200px;
+            width: 280px;
+            height: 280px;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
@@ -169,8 +169,8 @@
 
         .front-petal {
             position: absolute;
-            width: 35px;
-            height: 55px;
+            width: 45px;
+            height: 68px;
             background: #E6D700;
             border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
             top: 50%;
@@ -253,14 +253,14 @@
                 }, 1000 + (i * 80));
             }
             
-            // Create 8 front petals (smaller, darker yellow) - appear after back petals
+            // Create 13 front petals (slightly smaller, darker yellow) - appear after back petals
             const backPetalsDelay = 1000 + (13 * 80); // Wait for all back petals to finish
-            for (let i = 0; i < 8; i++) {
+            for (let i = 0; i < 13; i++) {
                 const frontPetal = document.createElement('div');
                 frontPetal.className = 'front-petal';
-                const angle = (i * (360 / 8)) - 67.5; // Offset to sit between back petals
+                const angle = (i * (360 / 13)) - 90 + (360 / 26); // Offset by half to sit between back petals
                 
-                frontPetal.style.transform = `translate(-50%, -50%) rotate(${angle}deg) translateY(-72px)`;
+                frontPetal.style.transform = `translate(-50%, -50%) rotate(${angle}deg) translateY(-102px)`;
                 
                 frontPetalsContainer.appendChild(frontPetal);
                 
