@@ -143,7 +143,6 @@
             position: absolute;
             width: 50px;
             height: 75px;
-            background: #FFFF00;
             border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
             top: 50%;
             left: 50%;
@@ -179,7 +178,6 @@
             position: absolute;
             width: 45px;
             height: 68px;
-            background: #E6D700;
             border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
             top: 50%;
             left: 50%;
@@ -242,6 +240,37 @@
         let clickCount = 0;
         let occupiedSpaces = [];
 
+        // Color variations for petals
+        const petalColors = [
+            '#FFFF00', // Bright yellow (standard)
+            '#FFD700', // Gold
+            '#FFF44F', // Light yellow
+            '#FFEB3B', // Lighter yellow
+            '#F4E04D', // Pale yellow
+            '#E6D700', // Darker yellow
+            '#FFD54F', // Medium yellow
+            '#FFEA00', // Vivid yellow
+        ];
+
+        function getRandomColor() {
+            return petalColors[Math.floor(Math.random() * petalColors.length)];
+        }
+
+        function getDarkerColor(baseColor) {
+            // Make front petals slightly darker than back petals
+            const colorMap = {
+                '#FFFF00': '#E6D700',
+                '#FFD700': '#D4BE00',
+                '#FFF44F': '#E6DB46',
+                '#FFEB3B': '#E6D232',
+                '#F4E04D': '#DBC944',
+                '#E6D700': '#CCC200',
+                '#FFD54F': '#E6BC46',
+                '#FFEA00': '#E6D100',
+            };
+            return colorMap[baseColor] || '#E6D700';
+        }
+
         function createSunflowerElement(x, y, scale = 1, delay = 0) {
             const sunflower = document.createElement('div');
             sunflower.className = 'sunflower';
@@ -267,6 +296,10 @@
             // Store occupied space
             occupiedSpaces.push({ x, y, scale });
             
+            // Pick a random color for this sunflower
+            const backPetalColor = getRandomColor();
+            const frontPetalColor = getDarkerColor(backPetalColor);
+            
             // Trigger bloom animation
             setTimeout(() => {
                 sunflower.classList.add('animate');
@@ -276,6 +309,7 @@
             for (let i = 0; i < 13; i++) {
                 const petal = document.createElement('div');
                 petal.className = 'petal';
+                petal.style.background = backPetalColor;
                 const angle = (i * (360 / 13)) - 90;
                 petal.style.transform = `translate(-50%, -50%) rotate(${angle}deg) translateY(-110px)`;
                 petalsContainer.appendChild(petal);
@@ -290,6 +324,7 @@
             for (let i = 0; i < 13; i++) {
                 const frontPetal = document.createElement('div');
                 frontPetal.className = 'front-petal';
+                frontPetal.style.background = frontPetalColor;
                 const angle = (i * (360 / 13)) - 90 + (360 / 26);
                 frontPetal.style.transform = `translate(-50%, -50%) rotate(${angle}deg) translateY(-102px)`;
                 frontPetalsContainer.appendChild(frontPetal);
@@ -336,7 +371,7 @@
         }
 
         function getRandomScale() {
-            return Math.random() * 0.5 + 0.5; // 0.5 to 1.0
+            return Math.random() * 0.6 + 0.4; // 0.4 to 1.0 (wider range for more variance)
         }
 
         function addSunflowers(count) {
@@ -353,7 +388,7 @@
             let attempts = 0;
             
             while (filled < 30 && attempts < 200) {
-                const scale = Math.random() * 0.4 + 0.3; // 0.3 to 0.7 (smaller for filling gaps)
+                const scale = Math.random() * 0.5 + 0.25; // 0.25 to 0.75 (varied sizes for filling gaps)
                 const x = Math.random() * 90 + 5;
                 const y = Math.random() * 90 + 5;
                 
