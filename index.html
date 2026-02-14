@@ -264,7 +264,7 @@
             
             sunflowerField.appendChild(sunflower);
             
-            // Store occupied space (only the center matters for collision)
+            // Store occupied space
             occupiedSpaces.push({ x, y, scale });
             
             // Trigger bloom animation
@@ -302,20 +302,19 @@
             return sunflower;
         }
 
-        function checkCenterOverlap(x, y, scale) {
-            // Only check if centers overlap, petals can overlap
-            // Center radius in viewport percentage (120px center / typical viewport)
-            const baseCenterRadius = 3; // Approximate percentage for center only
+        function checkOverlap(x, y, scale) {
+            // Calculate minimum distance based on scale (sunflower size)
+            const baseRadius = 15; // Base radius in percentage units
             
             for (let space of occupiedSpaces) {
                 const distance = Math.sqrt(Math.pow(x - space.x, 2) + Math.pow(y - space.y, 2));
-                const minDistance = baseCenterRadius * (scale + space.scale);
+                const minDistance = baseRadius * (scale + space.scale);
                 
                 if (distance < minDistance) {
-                    return true; // Center overlap detected
+                    return true; // Overlap detected
                 }
             }
-            return false; // No center overlap
+            return false; // No overlap
         }
 
         function getRandomPosition(scale) {
@@ -326,7 +325,7 @@
                 x = Math.random() * 80 + 10; // 10% to 90%
                 y = Math.random() * 80 + 10; // 10% to 90%
                 
-                if (!checkCenterOverlap(x, y, scale)) {
+                if (!checkOverlap(x, y, scale)) {
                     return { x, y };
                 }
                 attempts++;
@@ -337,12 +336,7 @@
         }
 
         function getRandomScale() {
-            // 40% chance of small sunflower (0.3-0.5), 60% chance of normal/large (0.6-1.0)
-            if (Math.random() < 0.4) {
-                return Math.random() * 0.2 + 0.3; // Small: 0.3 to 0.5
-            } else {
-                return Math.random() * 0.4 + 0.6; // Normal/Large: 0.6 to 1.0
-            }
+            return Math.random() * 0.5 + 0.5; // 0.5 to 1.0
         }
 
         function addSunflowers(count) {
@@ -354,17 +348,17 @@
         }
 
         function fillScreen() {
-            // Try to fill remaining spaces with various sizes
+            // Try to fill remaining spaces
             let filled = 0;
             let attempts = 0;
             
-            while (filled < 40 && attempts < 300) {
-                const scale = getRandomScale(); // Use same random scale logic
+            while (filled < 30 && attempts < 200) {
+                const scale = Math.random() * 0.4 + 0.3; // 0.3 to 0.7 (smaller for filling gaps)
                 const x = Math.random() * 90 + 5;
                 const y = Math.random() * 90 + 5;
                 
-                if (!checkCenterOverlap(x, y, scale)) {
-                    createSunflowerElement(x, y, scale, filled * 60);
+                if (!checkOverlap(x, y, scale)) {
+                    createSunflowerElement(x, y, scale, filled * 80);
                     filled++;
                 }
                 attempts++;
