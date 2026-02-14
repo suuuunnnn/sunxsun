@@ -74,9 +74,17 @@
             pointer-events: none;
         }
 
-        .sunflower {
-            position: relative;
+        .sunflower-field {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             z-index: 10;
+        }
+
+        .sunflower {
+            position: absolute;
         }
 
         .sunflower.animate {
@@ -183,8 +191,8 @@
             animation: petal-grow 0.5s ease forwards;
         }
 
-        /* Button */
-        .reset-btn {
+        /* Buttons */
+        .btn {
             position: absolute;
             bottom: 50px;
             left: 50%;
@@ -196,87 +204,189 @@
             border: 3px solid #654321;
             border-radius: 10px;
             cursor: pointer;
-            transition: transform 0.2s;
+            transition: transform 0.2s, opacity 0.3s;
             z-index: 100;
+            opacity: 0;
+            pointer-events: none;
         }
 
-        .reset-btn:hover {
+        .btn.show {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .btn:hover {
             transform: translateX(-50%) scale(1.05);
         }
 
-        .reset-btn:active {
+        .btn:active {
             transform: translateX(-50%) scale(0.95);
+        }
+
+        #moreBtn {
+            bottom: 120px;
         }
     </style>
 </head>
 <body>
-    <div class="sunflower" id="sunflower">
-        <div class="petals" id="petals"></div>
-        <div class="front-petals" id="frontPetals"></div>
-        <div class="center"></div>
-    </div>
+    <div class="sunflower-field" id="sunflowerField"></div>
 
-    <button class="reset-btn" id="resetBtn">isa pa nga</button>
+    <button class="btn" id="moreBtn">click for more</button>
+    <button class="btn" id="resetBtn">isa pa nga</button>
 
     <script>
-        const petalsContainer = document.getElementById('petals');
-        const frontPetalsContainer = document.getElementById('frontPetals');
-        const sunflower = document.getElementById('sunflower');
+        const sunflowerField = document.getElementById('sunflowerField');
+        const moreBtn = document.getElementById('moreBtn');
         const resetBtn = document.getElementById('resetBtn');
         
-        function createSunflower() {
-            // Clear existing petals
-            petalsContainer.innerHTML = '';
-            frontPetalsContainer.innerHTML = '';
+        let clickCount = 0;
+        let sunflowerCount = 0;
+
+        function createSunflowerElement(x, y, scale = 1, delay = 0) {
+            const sunflower = document.createElement('div');
+            sunflower.className = 'sunflower';
+            sunflower.style.left = x + '%';
+            sunflower.style.top = y + '%';
+            sunflower.style.transform = `translate(-50%, -50%) scale(${scale})`;
             
-            // Remove animation class
-            sunflower.classList.remove('animate');
+            const petalsContainer = document.createElement('div');
+            petalsContainer.className = 'petals';
             
-            // Force reflow
-            void sunflower.offsetWidth;
+            const frontPetalsContainer = document.createElement('div');
+            frontPetalsContainer.className = 'front-petals';
             
-            // Add animation class
-            sunflower.classList.add('animate');
+            const center = document.createElement('div');
+            center.className = 'center';
             
-            // Create 13 back petals (larger, bright yellow)
+            sunflower.appendChild(petalsContainer);
+            sunflower.appendChild(frontPetalsContainer);
+            sunflower.appendChild(center);
+            
+            sunflowerField.appendChild(sunflower);
+            
+            // Trigger bloom animation
+            setTimeout(() => {
+                sunflower.classList.add('animate');
+            }, delay);
+            
+            // Create back petals
             for (let i = 0; i < 13; i++) {
                 const petal = document.createElement('div');
                 petal.className = 'petal';
                 const angle = (i * (360 / 13)) - 90;
-                
                 petal.style.transform = `translate(-50%, -50%) rotate(${angle}deg) translateY(-110px)`;
-                
                 petalsContainer.appendChild(petal);
                 
                 setTimeout(() => {
                     petal.classList.add('show');
-                }, 1000 + (i * 80));
+                }, delay + 1000 + (i * 80));
             }
             
-            // Create 13 front petals (slightly smaller, darker yellow) - appear after back petals
-            const backPetalsDelay = 1000 + (13 * 80); // Wait for all back petals to finish
+            // Create front petals
+            const backPetalsDelay = delay + 1000 + (13 * 80);
             for (let i = 0; i < 13; i++) {
                 const frontPetal = document.createElement('div');
                 frontPetal.className = 'front-petal';
-                const angle = (i * (360 / 13)) - 90 + (360 / 26); // Offset by half to sit between back petals
-                
+                const angle = (i * (360 / 13)) - 90 + (360 / 26);
                 frontPetal.style.transform = `translate(-50%, -50%) rotate(${angle}deg) translateY(-102px)`;
-                
                 frontPetalsContainer.appendChild(frontPetal);
                 
                 setTimeout(() => {
                     frontPetal.classList.add('show');
                 }, backPetalsDelay + 200 + (i * 80));
             }
+            
+            return sunflower;
         }
-        
-        // Initial creation
-        createSunflower();
-        
-        // Reset button
-        resetBtn.addEventListener('click', () => {
-            createSunflower();
+
+        function getRandomPosition() {
+            return {
+                x: Math.random() * 80 + 10, // 10% to 90%
+                y: Math.random() * 80 + 10  // 10% to 90%
+            };
+        }
+
+        function getRandomScale() {
+            return Math.random() * 0.5 + 0.5; // 0.5 to 1.0
+        }
+
+        function addSunflowers(count) {
+            for (let i = 0; i < count; i++) {
+                const pos = getRandomPosition();
+                const scale = getRandomScale();
+                createSunflowerElement(pos.x, pos.y, scale, i * 300);
+                sunflowerCount++;
+            }
+        }
+
+        function fillScreen() {
+            // Create a grid to fill the screen
+            const rows = 6;
+            const cols = 8;
+            let index = 0;
+            
+            for (let row = 0; row < rows; row++) {
+                for (let col = 0; col < cols; col++) {
+                    const x = (col + 0.5) * (100 / cols) + (Math.random() * 10 - 5);
+                    const y = (row + 0.5) * (100 / rows) + (Math.random() * 10 - 5);
+                    const scale = Math.random() * 0.4 + 0.4; // 0.4 to 0.8
+                    createSunflowerElement(x, y, scale, index * 50);
+                    index++;
+                }
+            }
+        }
+
+        function initFirstSunflower() {
+            // Create the first sunflower in the center
+            createSunflowerElement(50, 50, 1, 0);
+            sunflowerCount++;
+            
+            // Show "click for more" button after first sunflower blooms
+            setTimeout(() => {
+                moreBtn.classList.add('show');
+            }, 1000 + (13 * 80) + 200 + (13 * 80) + 500); // After all animations
+        }
+
+        moreBtn.addEventListener('click', () => {
+            clickCount++;
+            
+            if (clickCount === 1) {
+                addSunflowers(1);
+            } else if (clickCount === 2) {
+                addSunflowers(2);
+            } else if (clickCount === 3) {
+                addSunflowers(4);
+            } else if (clickCount === 4) {
+                addSunflowers(5);
+            } else if (clickCount === 5) {
+                addSunflowers(9);
+            } else if (clickCount === 6) {
+                moreBtn.classList.remove('show');
+                fillScreen();
+                
+                // Show reset button after filling screen
+                setTimeout(() => {
+                    resetBtn.classList.add('show');
+                }, 3000);
+            }
         });
+
+        resetBtn.addEventListener('click', () => {
+            // Clear all sunflowers
+            sunflowerField.innerHTML = '';
+            clickCount = 0;
+            sunflowerCount = 0;
+            
+            // Hide buttons
+            moreBtn.classList.remove('show');
+            resetBtn.classList.remove('show');
+            
+            // Start over
+            initFirstSunflower();
+        });
+
+        // Initialize
+        initFirstSunflower();
     </script>
 </body>
 </html>
