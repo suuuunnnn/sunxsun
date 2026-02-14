@@ -145,20 +145,38 @@
             top: 50%;
             left: 50%;
             transform-origin: center center;
+            opacity: 1;
         }
 
         .petal-front {
             background: #FFD700;
         }
 
-        @keyframes petal-grow {
+        .petal.sprout-back {
+            animation: petal-grow-back 1.2s ease-out forwards;
+        }
+
+        .petal.sprout-front {
+            animation: petal-grow-front 1.2s ease-out forwards;
+        }
+
+        @keyframes petal-grow-back {
             0% {
+                transform: translate(-50%, -50%) rotate(0deg) translateY(0) scale(0.01);
                 opacity: 0;
-                transform: translate(-50%, -50%) scale(0.01);
             }
             100% {
                 opacity: 1;
-                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+
+        @keyframes petal-grow-front {
+            0% {
+                transform: translate(-50%, -50%) rotate(0deg) translateY(0) scale(0.01);
+                opacity: 0;
+            }
+            100% {
+                opacity: 1;
             }
         }
 
@@ -221,15 +239,14 @@
                 petal.className = 'petal';
                 const angle = (i * (360 / 13)) - 90;
                 
-                // Set position with more space from center (95px instead of 85px)
-                petal.style.transform = `translate(-50%, -50%) rotate(${angle}deg) translateY(-95px)`;
-                petal.style.opacity = '0';
+                // Set final position immediately - more space from center (100px)
+                petal.style.transform = `translate(-50%, -50%) rotate(${angle}deg) translateY(-100px)`;
                 
                 petalsBackContainer.appendChild(petal);
                 
                 // Trigger sprout animation for back petals
                 setTimeout(() => {
-                    petal.style.animation = 'petal-grow 1.2s ease-out forwards';
+                    petal.classList.add('sprout-back');
                 }, 100);
             }
             
@@ -239,15 +256,14 @@
                 petal.className = 'petal petal-front';
                 const angle = (i * (360 / 13)) - 90 + (360 / 26); // Offset by half the spacing
                 
-                // Set position with more space from center (95px instead of 85px)
-                petal.style.transform = `translate(-50%, -50%) rotate(${angle}deg) translateY(-95px)`;
-                petal.style.opacity = '0';
+                // Set final position immediately - more space from center (100px)
+                petal.style.transform = `translate(-50%, -50%) rotate(${angle}deg) translateY(-100px)`;
                 
                 petalsFrontContainer.appendChild(petal);
                 
                 // Trigger sprout animation for front petals (after back petals)
                 setTimeout(() => {
-                    petal.style.animation = 'petal-grow 1.2s ease-out forwards';
+                    petal.classList.add('sprout-front');
                 }, 800);
             }
             
