@@ -240,7 +240,7 @@
         const resetBtn = document.getElementById('resetBtn');
         
         let clickCount = 0;
-        let sunflowerCount = 0;
+        let occupiedSpaces = [];
 
         function createSunflowerElement(x, y, scale = 1, delay = 0) {
             const sunflower = document.createElement('div');
@@ -263,6 +263,9 @@
             sunflower.appendChild(center);
             
             sunflowerField.appendChild(sunflower);
+            
+            // Store occupied space
+            occupiedSpaces.push({ x, y, scale });
             
             // Trigger bloom animation
             setTimeout(() => {
@@ -299,11 +302,37 @@
             return sunflower;
         }
 
-        function getRandomPosition() {
-            return {
-                x: Math.random() * 80 + 10, // 10% to 90%
-                y: Math.random() * 80 + 10  // 10% to 90%
-            };
+        function checkOverlap(x, y, scale) {
+            // Calculate minimum distance based on scale (sunflower size)
+            const baseRadius = 15; // Base radius in percentage units
+            
+            for (let space of occupiedSpaces) {
+                const distance = Math.sqrt(Math.pow(x - space.x, 2) + Math.pow(y - space.y, 2));
+                const minDistance = baseRadius * (scale + space.scale);
+                
+                if (distance < minDistance) {
+                    return true; // Overlap detected
+                }
+            }
+            return false; // No overlap
+        }
+
+        function getRandomPosition(scale) {
+            let attempts = 0;
+            let x, y;
+            
+            while (attempts < 100) {
+                x = Math.random() * 80 + 10; // 10% to 90%
+                y = Math.random() * 80 + 10; // 10% to 90%
+                
+                if (!checkOverlap(x, y, scale)) {
+                    return { x, y };
+                }
+                attempts++;
+            }
+            
+            // If we can't find a spot after 100 attempts, just return a random position
+            return { x: Math.random() * 80 + 10, y: Math.random() * 80 + 10 };
         }
 
         function getRandomScale() {
@@ -312,34 +341,33 @@
 
         function addSunflowers(count) {
             for (let i = 0; i < count; i++) {
-                const pos = getRandomPosition();
                 const scale = getRandomScale();
+                const pos = getRandomPosition(scale);
                 createSunflowerElement(pos.x, pos.y, scale, i * 300);
-                sunflowerCount++;
             }
         }
 
         function fillScreen() {
-            // Create a grid to fill the screen
-            const rows = 6;
-            const cols = 8;
-            let index = 0;
+            // Try to fill remaining spaces
+            let filled = 0;
+            let attempts = 0;
             
-            for (let row = 0; row < rows; row++) {
-                for (let col = 0; col < cols; col++) {
-                    const x = (col + 0.5) * (100 / cols) + (Math.random() * 10 - 5);
-                    const y = (row + 0.5) * (100 / rows) + (Math.random() * 10 - 5);
-                    const scale = Math.random() * 0.4 + 0.4; // 0.4 to 0.8
-                    createSunflowerElement(x, y, scale, index * 50);
-                    index++;
+            while (filled < 30 && attempts < 200) {
+                const scale = Math.random() * 0.4 + 0.3; // 0.3 to 0.7 (smaller for filling gaps)
+                const x = Math.random() * 90 + 5;
+                const y = Math.random() * 90 + 5;
+                
+                if (!checkOverlap(x, y, scale)) {
+                    createSunflowerElement(x, y, scale, filled * 80);
+                    filled++;
                 }
+                attempts++;
             }
         }
 
         function initFirstSunflower() {
-            // Create the first sunflower in the center
+            // Create the first sunflower exactly in the center
             createSunflowerElement(50, 50, 1, 0);
-            sunflowerCount++;
             
             // Show "click for more" button after first sunflower blooms
             setTimeout(() => {
@@ -375,7 +403,7 @@
             // Clear all sunflowers
             sunflowerField.innerHTML = '';
             clickCount = 0;
-            sunflowerCount = 0;
+            occupiedSpaces = [];
             
             // Hide buttons
             moreBtn.classList.remove('show');
