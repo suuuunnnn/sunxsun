@@ -79,22 +79,16 @@
             z-index: 10;
         }
 
-        .sunflower.animate {
-            animation: bloom 3s ease forwards;
+        .sunflower.spin {
+            animation: spin 2s ease-in-out forwards;
         }
 
-        @keyframes bloom {
+        @keyframes spin {
             0% {
-                transform: scale(0) rotate(0deg);
-                opacity: 0;
-            }
-            50% {
-                transform: scale(1.2) rotate(180deg);
-                opacity: 1;
+                transform: rotate(0deg);
             }
             100% {
-                transform: scale(1) rotate(360deg);
-                opacity: 1;
+                transform: rotate(360deg);
             }
         }
 
@@ -142,42 +136,35 @@
             z-index: 2;
         }
 
-        .petal-wrapper {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform-origin: center center;
-        }
-
         .petal {
             position: absolute;
             width: 50px;
             height: 75px;
             background: #FFFF00;
             border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-            left: 0;
-            top: -37.5px;
-            transform-origin: 0 37.5px;
+            top: 50%;
+            left: 50%;
+            transform-origin: center center;
         }
 
         .petal-front {
             background: #FFD700;
         }
 
-        .petal-wrapper.sprout .petal {
-            animation: petal-sprout 1s ease forwards;
+        .petal.sprout {
+            animation: petal-grow 1s ease forwards;
         }
 
-        @keyframes petal-sprout {
+        @keyframes petal-grow {
             0% {
-                transform: translateX(0) scaleX(0.1) scaleY(0.1);
+                transform: translate(-50%, -50%) scale(0.01);
                 opacity: 0;
             }
             50% {
                 opacity: 1;
             }
             100% {
-                transform: translateX(110px) scaleX(1) scaleY(1);
+                transform: translate(-50%, -50%) scale(1);
                 opacity: 1;
             }
         }
@@ -229,51 +216,49 @@
             petalsFrontContainer.innerHTML = '';
             
             // Remove animation class
-            sunflower.classList.remove('animate');
+            sunflower.classList.remove('spin');
             
             // Force reflow
             void sunflower.offsetWidth;
             
-            // Add animation class
-            sunflower.classList.add('animate');
-            
             // Create back layer petals (bright yellow)
             for (let i = 0; i < 13; i++) {
-                const wrapper = document.createElement('div');
-                wrapper.className = 'petal-wrapper';
-                const angle = (i * (360 / 13));
-                wrapper.style.transform = `translate(-50%, -50%) rotate(${angle}deg)`;
-                
                 const petal = document.createElement('div');
                 petal.className = 'petal';
+                const angle = (i * (360 / 13)) - 90;
                 
-                wrapper.appendChild(petal);
-                petalsBackContainer.appendChild(wrapper);
+                // Position petals closer to center (85px instead of 110px)
+                petal.style.transform = `translate(-50%, -50%) rotate(${angle}deg) translateY(-85px)`;
                 
-                // Trigger animation after a delay
+                petalsBackContainer.appendChild(petal);
+                
+                // Trigger sprout animation
                 setTimeout(() => {
-                    wrapper.classList.add('sprout');
-                }, 1000);
+                    petal.classList.add('sprout');
+                }, 100);
             }
             
             // Create front layer petals (darker yellow) - offset angle
             for (let i = 0; i < 13; i++) {
-                const wrapper = document.createElement('div');
-                wrapper.className = 'petal-wrapper';
-                const angle = (i * (360 / 13)) + (360 / 26); // Offset by half the spacing
-                wrapper.style.transform = `translate(-50%, -50%) rotate(${angle}deg)`;
-                
                 const petal = document.createElement('div');
                 petal.className = 'petal petal-front';
+                const angle = (i * (360 / 13)) - 90 + (360 / 26); // Offset by half the spacing
                 
-                wrapper.appendChild(petal);
-                petalsFrontContainer.appendChild(wrapper);
+                // Position petals closer to center (85px instead of 110px)
+                petal.style.transform = `translate(-50%, -50%) rotate(${angle}deg) translateY(-85px)`;
                 
-                // Trigger animation after a delay (starts slightly after back petals)
+                petalsFrontContainer.appendChild(petal);
+                
+                // Trigger sprout animation slightly after back petals
                 setTimeout(() => {
-                    wrapper.classList.add('sprout');
-                }, 1300);
+                    petal.classList.add('sprout');
+                }, 100);
             }
+            
+            // Spin the entire flower after petals have sprouted
+            setTimeout(() => {
+                sunflower.classList.add('spin');
+            }, 1200);
         }
         
         // Initial creation
