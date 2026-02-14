@@ -156,21 +156,21 @@
             }
         }
 
-        /* Front petals - darker yellow */
-        .petals-front {
+        /* Front petals (inner layer) */
+        .front-petals {
             position: absolute;
-            width: 300px;
-            height: 300px;
+            width: 200px;
+            height: 200px;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            z-index: 4;
+            z-index: 2;
         }
 
-        .petal-front {
+        .front-petal {
             position: absolute;
-            width: 50px;
-            height: 75px;
+            width: 35px;
+            height: 55px;
             background: #E6D700;
             border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
             top: 50%;
@@ -179,7 +179,7 @@
             opacity: 0;
         }
 
-        .petal-front.show {
+        .front-petal.show {
             animation: petal-grow 0.5s ease forwards;
         }
 
@@ -212,22 +212,22 @@
 <body>
     <div class="sunflower" id="sunflower">
         <div class="petals" id="petals"></div>
+        <div class="front-petals" id="frontPetals"></div>
         <div class="center"></div>
-        <div class="petals-front" id="petalsFront"></div>
     </div>
 
     <button class="reset-btn" id="resetBtn">isa pa nga</button>
 
     <script>
         const petalsContainer = document.getElementById('petals');
-        const petalsFrontContainer = document.getElementById('petalsFront');
+        const frontPetalsContainer = document.getElementById('frontPetals');
         const sunflower = document.getElementById('sunflower');
         const resetBtn = document.getElementById('resetBtn');
         
         function createSunflower() {
             // Clear existing petals
             petalsContainer.innerHTML = '';
-            petalsFrontContainer.innerHTML = '';
+            frontPetalsContainer.innerHTML = '';
             
             // Remove animation class
             sunflower.classList.remove('animate');
@@ -238,7 +238,7 @@
             // Add animation class
             sunflower.classList.add('animate');
             
-            // Create 13 back petals (bright yellow)
+            // Create 13 back petals (larger, bright yellow)
             for (let i = 0; i < 13; i++) {
                 const petal = document.createElement('div');
                 petal.className = 'petal';
@@ -253,21 +253,21 @@
                 }, 1000 + (i * 80));
             }
             
-            // Create 5 front petals (darker yellow) - appearing after back petals
-            const frontAngles = [-90, -60, -30, -120, -150]; // Front-facing positions
-            frontAngles.forEach((angle, i) => {
-                const petal = document.createElement('div');
-                petal.className = 'petal-front';
+            // Create 8 front petals (smaller, darker yellow) - appear after back petals
+            const backPetalsDelay = 1000 + (13 * 80); // Wait for all back petals to finish
+            for (let i = 0; i < 8; i++) {
+                const frontPetal = document.createElement('div');
+                frontPetal.className = 'front-petal';
+                const angle = (i * (360 / 8)) - 67.5; // Offset to sit between back petals
                 
-                petal.style.transform = `translate(-50%, -50%) rotate(${angle}deg) translateY(-110px)`;
+                frontPetal.style.transform = `translate(-50%, -50%) rotate(${angle}deg) translateY(-72px)`;
                 
-                petalsFrontContainer.appendChild(petal);
+                frontPetalsContainer.appendChild(frontPetal);
                 
-                // These appear after the back petals (2040ms = 1000 + 13*80)
                 setTimeout(() => {
-                    petal.classList.add('show');
-                }, 2100 + (i * 100));
-            });
+                    frontPetal.classList.add('show');
+                }, backPetalsDelay + 200 + (i * 80));
+            }
         }
         
         // Initial creation
