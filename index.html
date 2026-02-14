@@ -145,26 +145,37 @@
             top: 50%;
             left: 50%;
             transform-origin: center center;
+            opacity: 1;
         }
 
         .petal-front {
             background: #FFD700;
         }
 
-        .petal.sprout {
-            animation: petal-grow 1s ease forwards;
+        .petal.sprout-back {
+            animation: petal-grow-back 1.2s ease-out forwards;
         }
 
-        @keyframes petal-grow {
+        .petal.sprout-front {
+            animation: petal-grow-front 1.2s ease-out forwards;
+        }
+
+        @keyframes petal-grow-back {
             0% {
-                transform: translate(-50%, -50%) scale(0.01);
+                transform: translate(-50%, -50%) rotate(0deg) translateY(0) scale(0.01);
                 opacity: 0;
             }
-            50% {
+            100% {
                 opacity: 1;
             }
+        }
+
+        @keyframes petal-grow-front {
+            0% {
+                transform: translate(-50%, -50%) rotate(0deg) translateY(0) scale(0.01);
+                opacity: 0;
+            }
             100% {
-                transform: translate(-50%, -50%) scale(1);
                 opacity: 1;
             }
         }
@@ -217,6 +228,7 @@
             
             // Remove animation class
             sunflower.classList.remove('spin');
+            sunflower.style.transform = 'rotate(0deg)';
             
             // Force reflow
             void sunflower.offsetWidth;
@@ -227,14 +239,14 @@
                 petal.className = 'petal';
                 const angle = (i * (360 / 13)) - 90;
                 
-                // Position petals closer to center (85px instead of 110px)
+                // Set final position immediately
                 petal.style.transform = `translate(-50%, -50%) rotate(${angle}deg) translateY(-85px)`;
                 
                 petalsBackContainer.appendChild(petal);
                 
-                // Trigger sprout animation
+                // Trigger sprout animation for back petals
                 setTimeout(() => {
-                    petal.classList.add('sprout');
+                    petal.classList.add('sprout-back');
                 }, 100);
             }
             
@@ -244,21 +256,21 @@
                 petal.className = 'petal petal-front';
                 const angle = (i * (360 / 13)) - 90 + (360 / 26); // Offset by half the spacing
                 
-                // Position petals closer to center (85px instead of 110px)
+                // Set final position immediately
                 petal.style.transform = `translate(-50%, -50%) rotate(${angle}deg) translateY(-85px)`;
                 
                 petalsFrontContainer.appendChild(petal);
                 
-                // Trigger sprout animation slightly after back petals
+                // Trigger sprout animation for front petals (after back petals)
                 setTimeout(() => {
-                    petal.classList.add('sprout');
-                }, 100);
+                    petal.classList.add('sprout-front');
+                }, 800);
             }
             
-            // Spin the entire flower after petals have sprouted
+            // Spin the entire flower after all petals have sprouted
             setTimeout(() => {
                 sunflower.classList.add('spin');
-            }, 1200);
+            }, 2200);
         }
         
         // Initial creation
