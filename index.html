@@ -145,41 +145,20 @@
             top: 50%;
             left: 50%;
             transform-origin: center center;
-            opacity: 0;
-            transform: translate(-50%, -50%) scale(0.01);
         }
 
         .petal-front {
             background: #FFD700;
         }
 
-        .petal.sprout-back {
-            animation: petal-grow-back 1.2s ease-out forwards;
-        }
-
-        .petal.sprout-front {
-            animation: petal-grow-front 1.2s ease-out forwards;
-        }
-
-        @keyframes petal-grow-back {
+        @keyframes petal-grow {
             0% {
-                transform: translate(-50%, -50%) scale(0.01);
                 opacity: 0;
+                transform: translate(-50%, -50%) scale(0.01);
             }
             100% {
-                transform: translate(-50%, -50%) scale(1);
                 opacity: 1;
-            }
-        }
-
-        @keyframes petal-grow-front {
-            0% {
-                transform: translate(-50%, -50%) scale(0.01);
-                opacity: 0;
-            }
-            100% {
                 transform: translate(-50%, -50%) scale(1);
-                opacity: 1;
             }
         }
 
@@ -242,18 +221,15 @@
                 petal.className = 'petal';
                 const angle = (i * (360 / 13)) - 90;
                 
-                // Store the angle for later
-                petal.dataset.angle = angle;
+                // Set position with more space from center (95px instead of 85px)
+                petal.style.transform = `translate(-50%, -50%) rotate(${angle}deg) translateY(-95px)`;
+                petal.style.opacity = '0';
                 
                 petalsBackContainer.appendChild(petal);
                 
                 // Trigger sprout animation for back petals
                 setTimeout(() => {
-                    petal.classList.add('sprout-back');
-                    // Set final transform after animation starts
-                    setTimeout(() => {
-                        petal.style.transform = `translate(-50%, -50%) rotate(${angle}deg) translateY(-85px)`;
-                    }, 10);
+                    petal.style.animation = 'petal-grow 1.2s ease-out forwards';
                 }, 100);
             }
             
@@ -263,18 +239,15 @@
                 petal.className = 'petal petal-front';
                 const angle = (i * (360 / 13)) - 90 + (360 / 26); // Offset by half the spacing
                 
-                // Store the angle for later
-                petal.dataset.angle = angle;
+                // Set position with more space from center (95px instead of 85px)
+                petal.style.transform = `translate(-50%, -50%) rotate(${angle}deg) translateY(-95px)`;
+                petal.style.opacity = '0';
                 
                 petalsFrontContainer.appendChild(petal);
                 
                 // Trigger sprout animation for front petals (after back petals)
                 setTimeout(() => {
-                    petal.classList.add('sprout-front');
-                    // Set final transform after animation starts
-                    setTimeout(() => {
-                        petal.style.transform = `translate(-50%, -50%) rotate(${angle}deg) translateY(-85px)`;
-                    }, 10);
+                    petal.style.animation = 'petal-grow 1.2s ease-out forwards';
                 }, 800);
             }
             
@@ -294,4 +267,3 @@
     </script>
 </body>
 </html>
-
