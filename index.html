@@ -120,8 +120,8 @@
             border-radius: 50%;
         }
 
-        /* Petals container - back layer */
-        .petals-back {
+        /* Petals container */
+        .petals {
             position: absolute;
             width: 300px;
             height: 300px;
@@ -129,17 +129,6 @@
             left: 50%;
             transform: translate(-50%, -50%);
             z-index: 1;
-        }
-
-        /* Petals container - front layer */
-        .petals-front {
-            position: absolute;
-            width: 300px;
-            height: 300px;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 2;
         }
 
         .petal {
@@ -154,10 +143,6 @@
             opacity: 0;
         }
 
-        .petal-front {
-            background: #F4D03F;
-        }
-
         .petal.show {
             animation: petal-grow 0.5s ease forwards;
         }
@@ -169,6 +154,33 @@
             100% {
                 opacity: 1;
             }
+        }
+
+        /* Front petals - darker yellow */
+        .petals-front {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 4;
+        }
+
+        .petal-front {
+            position: absolute;
+            width: 50px;
+            height: 75px;
+            background: #E6D700;
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            top: 50%;
+            left: 50%;
+            transform-origin: center center;
+            opacity: 0;
+        }
+
+        .petal-front.show {
+            animation: petal-grow 0.5s ease forwards;
         }
 
         /* Button */
@@ -199,22 +211,22 @@
 </head>
 <body>
     <div class="sunflower" id="sunflower">
-        <div class="petals-back" id="petalsBack"></div>
-        <div class="petals-front" id="petalsFront"></div>
+        <div class="petals" id="petals"></div>
         <div class="center"></div>
+        <div class="petals-front" id="petalsFront"></div>
     </div>
 
     <button class="reset-btn" id="resetBtn">isa pa nga</button>
 
     <script>
-        const petalsBackContainer = document.getElementById('petalsBack');
+        const petalsContainer = document.getElementById('petals');
         const petalsFrontContainer = document.getElementById('petalsFront');
         const sunflower = document.getElementById('sunflower');
         const resetBtn = document.getElementById('resetBtn');
         
         function createSunflower() {
             // Clear existing petals
-            petalsBackContainer.innerHTML = '';
+            petalsContainer.innerHTML = '';
             petalsFrontContainer.innerHTML = '';
             
             // Remove animation class
@@ -226,7 +238,7 @@
             // Add animation class
             sunflower.classList.add('animate');
             
-            // Create back layer - 13 petals
+            // Create 13 back petals (bright yellow)
             for (let i = 0; i < 13; i++) {
                 const petal = document.createElement('div');
                 petal.className = 'petal';
@@ -234,27 +246,28 @@
                 
                 petal.style.transform = `translate(-50%, -50%) rotate(${angle}deg) translateY(-110px)`;
                 
-                petalsBackContainer.appendChild(petal);
+                petalsContainer.appendChild(petal);
                 
                 setTimeout(() => {
                     petal.classList.add('show');
                 }, 1000 + (i * 80));
             }
             
-            // Create front layer - 13 petals (offset by half the angle)
-            for (let i = 0; i < 13; i++) {
+            // Create 5 front petals (darker yellow) - appearing after back petals
+            const frontAngles = [-90, -60, -30, -120, -150]; // Front-facing positions
+            frontAngles.forEach((angle, i) => {
                 const petal = document.createElement('div');
-                petal.className = 'petal petal-front';
-                const angle = (i * (360 / 13)) - 90 + (360 / 26); // Offset by half
+                petal.className = 'petal-front';
                 
                 petal.style.transform = `translate(-50%, -50%) rotate(${angle}deg) translateY(-110px)`;
                 
                 petalsFrontContainer.appendChild(petal);
                 
+                // These appear after the back petals (2040ms = 1000 + 13*80)
                 setTimeout(() => {
                     petal.classList.add('show');
-                }, 1000 + (i * 80) + 40; // Slight delay after back petals
-            }
+                }, 2100 + (i * 100));
+            });
         }
         
         // Initial creation
