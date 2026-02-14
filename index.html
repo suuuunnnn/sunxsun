@@ -77,23 +77,12 @@
         .sunflower {
             position: relative;
             z-index: 10;
+            opacity: 0;
+            animation: fade-in 1s ease forwards;
         }
 
-        .sunflower.animate {
-            animation: bloom 3s ease forwards;
-        }
-
-        @keyframes bloom {
-            0% {
-                transform: scale(0) rotate(0deg);
-                opacity: 0;
-            }
-            50% {
-                transform: scale(1.2) rotate(180deg);
-                opacity: 1;
-            }
-            100% {
-                transform: scale(1) rotate(360deg);
+        @keyframes fade-in {
+            to {
                 opacity: 1;
             }
         }
@@ -150,26 +139,19 @@
             border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
             top: 50%;
             left: 50%;
-            transform-origin: center center;
-            opacity: 0;
         }
 
         .petal-front {
             background: #FFD700;
         }
 
-        .petal.show {
-            animation: petal-sprout 0.6s ease forwards;
-        }
-
         @keyframes petal-sprout {
-            0% {
+            from {
                 opacity: 0;
                 transform: translate(-50%, -50%) scale(0);
             }
-            100% {
+            to {
                 opacity: 1;
-                transform: translate(-50%, -50%) scale(1);
             }
         }
 
@@ -219,14 +201,10 @@
             petalsBackContainer.innerHTML = '';
             petalsFrontContainer.innerHTML = '';
             
-            // Remove animation class
-            sunflower.classList.remove('animate');
-            
-            // Force reflow
+            // Reset sunflower
+            sunflower.style.animation = 'none';
             void sunflower.offsetWidth;
-            
-            // Add animation class
-            sunflower.classList.add('animate');
+            sunflower.style.animation = 'fade-in 1s ease forwards';
             
             // Create back layer petals (bright yellow)
             for (let i = 0; i < 13; i++) {
@@ -234,44 +212,26 @@
                 petal.className = 'petal';
                 const angle = (i * (360 / 13)) - 90;
                 
-                // Set the final position
                 const finalTransform = `translate(-50%, -50%) rotate(${angle}deg) translateY(-110px)`;
-                petal.setAttribute('data-final-transform', finalTransform);
-                petal.style.transform = `translate(-50%, -50%) rotate(${angle}deg) translateY(-110px)`;
+                petal.style.transform = finalTransform;
+                petal.style.opacity = '0';
+                petal.style.animation = `petal-sprout 0.6s ease ${1 + (i * 0.08)}s forwards`;
                 
                 petalsBackContainer.appendChild(petal);
-                
-                // Add the animation class after a delay
-                setTimeout(() => {
-                    petal.classList.add('show');
-                    // Set the final transform after animation
-                    setTimeout(() => {
-                        petal.style.transform = finalTransform;
-                    }, 600);
-                }, 1000 + (i * 80));
             }
             
             // Create front layer petals (darker yellow) - offset angle
             for (let i = 0; i < 13; i++) {
                 const petal = document.createElement('div');
                 petal.className = 'petal petal-front';
-                const angle = (i * (360 / 13)) - 90 + (360 / 26); // Offset by half the spacing
+                const angle = (i * (360 / 13)) - 90 + (360 / 26);
                 
-                // Set the final position
                 const finalTransform = `translate(-50%, -50%) rotate(${angle}deg) translateY(-110px)`;
-                petal.setAttribute('data-final-transform', finalTransform);
-                petal.style.transform = `translate(-50%, -50%) rotate(${angle}deg) translateY(-110px)`;
+                petal.style.transform = finalTransform;
+                petal.style.opacity = '0';
+                petal.style.animation = `petal-sprout 0.6s ease ${2 + (i * 0.08)}s forwards`;
                 
                 petalsFrontContainer.appendChild(petal);
-                
-                // Add the animation class after a delay (starts after back petals)
-                setTimeout(() => {
-                    petal.classList.add('show');
-                    // Set the final transform after animation
-                    setTimeout(() => {
-                        petal.style.transform = finalTransform;
-                    }, 600);
-                }, 1500 + (i * 80));
             }
         }
         
